@@ -1,8 +1,10 @@
-import { LoginService } from '../../services/login/login.service';
+import { Router } from '@angular/router';
+import { LoginService } from '../../services/login.service';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { AuthRequest } from 'src/app/models/auth/auth-request.model';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -18,9 +20,12 @@ export class LoginComponent implements OnInit {
     email: 'Please enter a valid email address.'
   };
 
-  constructor(private fb: FormBuilder, private loginSevice: LoginService) { }
+  constructor(private fb: FormBuilder, private loginSevice: LoginService, private storageService: StorageService, private router: Router) { }
 
   ngOnInit() {
+    if (this.storageService.isLoggedIn()) {
+      this.router.navigateByUrl("/greetings");
+    }
     this.loginForm = this.fb.group({
       email: ['sean@test.com', [Validators.required, Validators.email]],
       password: ['SeanPass', Validators.required]
@@ -38,9 +43,10 @@ export class LoginComponent implements OnInit {
     const email = this.loginForm.get('email')?.value;
     const password = this.loginForm.get('password')?.value;
 
-    this.loginSevice.authorize(new AuthRequest(email, password)).subscribe((data: any) =>{
-      console.log(data);
-    })
+    this.loginSevice.authorize(new AuthRequest(email, password)).subscribe(response => {
+      this.storageService.saveToken(response.data.token);
+      this.router.navigateByUrl("/greetings");
+    });
   }
 
   setMessage(c: AbstractControl): void{

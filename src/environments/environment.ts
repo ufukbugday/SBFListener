@@ -4,9 +4,10 @@
 
 export const environment = {
   production: false,
-  apiUrl:"http://66.70.229.82:8181"
-};
-
+  apiUrl:"http://66.70.229.82:8181",
+  USER_KEY: "auth-user",
+  WS_CONNECTION: "ws://66.70.229.82:8181"
+}
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
